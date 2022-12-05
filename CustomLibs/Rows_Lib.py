@@ -116,7 +116,7 @@ def launch_p1(h0=0, h_purpose=10_000, launch_latitude=0.0, launch_longitude=0.0,
     if h_purpose - 600_000 > 25_000: raise RSF.Custom_error(
         "ФАЗА 1\nДалее ты 100% перелетишь нужную высоту и траектория будет неэффективной")
     if h_purpose - 600_000 < 3000: raise RSF.Custom_error(
-        "ФАЗА 1\nХерня какая-то, слишком маленькая высота подъема, такую даже не рассматриваем")
+        "ФАЗА 1\nВысота подъема слишком маленькая, не соответсвует структуре миссии")
 
     while current_h < h_purpose + deltaT:
         result = calculate_launch_phase_1(T=T,
@@ -189,7 +189,7 @@ def launch_p2(phase_1_h, phase_1_V_R, phase_1_V_C, phase_1_lat, phase_1_long, ph
 
         if result["FUEL_MASS"] < 0: raise RSF.Custom_error("ФАЗА 2\nНе хватит топлива")
         if current_h - 600_000 < 0: raise RSF.Custom_error("ФАЗА 2\nТы умудрился врезаться в землю")
-        if thrust_angle >= 80: raise RSF.Custom_error("ФАЗА 2\nТы фактически изменяешь смысл фазы, без этого")
+        if thrust_angle >= 80: raise RSF.Custom_error("ФАЗА 2\nТы наберёшь слишком много угловой скорости находясь в атмосфере, очевидно не ээффективно")
         if thrust_angle <= 10: raise RSF.Custom_error(
             "ФАЗА 2\nЗачем поворачиваться на такой маленький угол? Просто подлети выше и развернись нормально")
 
@@ -317,7 +317,7 @@ def launch_p3(phase_2_h, phase_2_V_R, phase_2_V_C, phase_2_lat, phase_2_long, ph
         elif T > 500:
             raise RSF.Custom_error(
                 "Достигнут лимит просчета траектории 3ей фазы, скорее всего ваша траектория не является возможной в рамках понимания 3ей фазы,"
-                "если вы уверены, что она возможна, то поменяйте параметр в проверке исключения 3ей фазы")
+                "если вы уверены, что она возможна, то поменяйте параметр в проверке исключения 3ей фазы, находится прямо здесь, выше вызова ошибки")
 
     if DRAW: get_trajectory(trajectory, color)
     if not FREE_MOD:
@@ -416,7 +416,7 @@ def launch_p4(V0, absT, lat_0, long_0, R, M0, FUEL_MASS, I, BURNING_RATE, deltaT
         if DRAW: get_trajectory(trajectory, color)
         return DATA
     else:
-        raise RSF.Custom_error("ФАЗА 4\nНе хватит deltaV, ложная траектория")
+        raise RSF.Custom_error("ФАЗА 4\nНе хватит топлива для набора deltaV")
 
 
 def calc_Hohmann_Transfer(pere_R, apo_R, long_0, lat_0, M0, FUEL_MASS, BURNING_RATE, absT, exc, period, T, a, Mu):
