@@ -9,11 +9,6 @@ DELTA_T = 0.01
 PHASE_3_GOAL = 80000
 EPSILON = 50
 TRANSFER_APO = row.KSP.MOON_RADIUS - row.KSP.MOON_SELF_RADIUS - 1_000_000
-# ---> Start parametrs
-"""HIGH_PHASE_1 = 10_000
-PHASE_2_THRUST_ANGLE = 45
-PHASE_2_DURATION = 38.06
-FREE_MOD = True"""
 # ---> Technical parametrs
 LAUNCH_PAD = {"latitude": - (0),
               "longitude": - (74 + 34 / 60 + 31 / (60 * 60)),
