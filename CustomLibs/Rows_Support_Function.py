@@ -41,11 +41,11 @@ def get_atm(altitude):
     elif (5000 <= altitude) and (altitude < 7500): p = 0.450
     elif (7500 <= altitude) and (altitude < 10_000): p = 0.287
     elif (10_000 <= altitude) and (altitude < 15_000): p = 0.177
-    elif (15_000 <= altitude) and (altitude < 20_000): p = 0.066 + 0.02
-    elif (20_000 <= altitude) and (altitude < 25_000): p = 0.025 + 0.02
-    elif (25_000 <= altitude) and (altitude < 30_000): p = 0.010 + 0.009
-    elif (30_000 <= altitude) and (altitude < 40_000): p = 0.004 + 0.008
-    elif (40_000 <= altitude) and (altitude < 50_000): p = 0.001 + 0.003
+    elif (15_000 <= altitude) and (altitude < 20_000): p = 0.066 + 0.015
+    elif (20_000 <= altitude) and (altitude < 25_000): p = 0.025 + 0.015
+    elif (25_000 <= altitude) and (altitude < 30_000): p = 0.010 + 0.006
+    elif (30_000 <= altitude) and (altitude < 40_000): p = 0.004 + 0.006
+    elif (40_000 <= altitude) and (altitude < 50_000): p = 0.001 + 0.002
     elif altitude >= 50_000 and altitude < 70_000: p = 0
     else: p = 0
     p = p * 1.23
@@ -95,17 +95,27 @@ def to_moon_system(orbitalV, moon_long, meta):
 
 def get_autopilot_full(filename, ALT1, T2, ANGL2, transfer_burn, start_angle, start_transfer, final_t, final_burn_t):
     file = open(filename, "w")
-    autopilot = """// Програмные данные
-                    set ALT1 to """ + str(toFixed(ALT1, 4)) +""". // Высота подьема первой фазы
-                    set ANGL2 to 90 - """ + str(toFixed(ANGL2, 4))+""".
-                    set T2 to """ + str(toFixed(T2, 4)) +""". // длительность второй фазы
-                    set transfer_burn to """ + str(toFixed(transfer_burn, 4)) +""". //время работы двигателя для переходной орбиты
-                    set start_angle to """ + str(toFixed(start_angle, 4)) +""". // угол между местом старта и муной
-                    set start_transfer to """ + str(toFixed(start_transfer, 4)) +""". //Время когда кончается фаза LEO и начинается переходная орбита
-                    set final_t to """ + str(toFixed(final_t, 4)) +""". // полупериод переходной орбиты, время когда мы будем на пике гепотетической переходной орбиты
-                    set final_burn_t to """ + str(toFixed(final_burn_t, 4)) +""". //Длительность последнего маневра
-                    set eps to 0.5. // градус погрешности
-                    
+    ALT1 = str(toFixed(ALT1, 4))
+    T2 = str(toFixed(T2, 4))
+    ANGL2 = str(toFixed(ANGL2, 4))
+    transfer_burn = str(toFixed(transfer_burn, 4))
+    start_angle = str(toFixed(start_angle, 4))
+    start_transfer = str(toFixed(start_transfer, 4))
+    final_t = str(toFixed(final_t, 4))
+    final_burn_t = str(toFixed(final_burn_t, 4))
+    autopilot = """
+                    set ALT1 to """ + ALT1 + """.
+                    set ANGL2 to 90 - """ + ANGL2 + """.
+                    set T2 to """ + T2 + """.
+                    set transfer_burn to """ + transfer_burn + """.
+                    set start_angle to """ + start_angle + """.
+                    set start_transfer to """ + start_transfer + """.
+                    set final_t to """ + final_t + """. 
+                    set final_burn_t to """ + final_burn_t + """.
+                    set eps to 0.5.
+                    set G to (6.6743) * ((10) ^ (-11)).
+                    set KERBAL_MASS to (5.2915158) * (10 ^ 22).
+
                     function DoSafeStage{
                         wait until stage:ready.
                         stage.
@@ -152,9 +162,11 @@ def get_autopilot_full(filename, ALT1, T2, ANGL2, transfer_burn, start_angle, st
                         set apo to apoapsis.
                         set t0 to time:seconds.
                         print t0.
-                        lock steering to heading(90, 0.4).
+                        lock steering to heading(90, 0).
                         lock throttle to 1.
-                        wait until (periapsis > apo - 1000).
+                        print ((G * KERBAL_MASS) / (apo + 600000))^0.5.
+                        print ship:velocity:orbit:sqrmagnitude^0.5.
+                        wait until ((ship:velocity:orbit:sqrmagnitude^0.5) > (((G * KERBAL_MASS) / (apo + 600000))^0.5)).
                         lock throttle to 0.
                         unlock steering.
                         unlock throttle.
