@@ -28,7 +28,6 @@ def formalize_data(DATA, title):
     for key in DATA.keys():
         length = len(key)
         max_key = max(max_key, length)
-
     output = "\n------->  " + str(title) + "  <-------\n\n"
     for key in DATA.keys():
         output += str(key) + ":   " + (" " * (max_key - len(key))) + str(DATA[key]) + "\n"
